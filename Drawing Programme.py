@@ -46,8 +46,21 @@ if __name__=="__main__":
     new_game = Canvas(size)
     new_game.run()
 
-class Brush():
+class Brush_and_Colours():
     def __init__(self):
         self.mouse_position_x=0
         self.mouse_position_y=0
+        self.colours={
+            "black":(0,0,0),
+            "red":(200,0,0),
+            "green":(0,200,0),
+            "blue":(0,200,0),
+            "orange":(230,115,0),
+            "yellow":(250,200,0),
+            "purple":(100,0,200),
+            "brown":(130,65,0),
+
+
+
+        }
 
