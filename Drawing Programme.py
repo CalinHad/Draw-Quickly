@@ -12,7 +12,9 @@ class Brush_and_Colours():
         pygame.init()
         pygame.font.init()
         self.mouse_position=pygame.mouse.get_pos()
-        self.brush = []
+        self.brush_strokes = []
+        self.brush_strokes_colour=[]
+        self.selected_colour=black
         self.game_display = display
         self.colours = {
             "black": (0, 0, 0),
@@ -42,7 +44,7 @@ class Brush_and_Colours():
             self.blot=pygame.Rect(self.x_coordinates[i],5,50,50)
             pygame.draw.ellipse(self.game_display, black, self.blot_border)
             pygame.draw.ellipse(self.game_display, self.colours[i], self.blot)
-    def Clear_Canvas(self):
+    def Clear_Canvas_Button(self):
         self.clear_border = pygame.Rect(1098, 3, 54, 54)
         self.clear_button = pygame.Rect(1100, 5, 50, 50)
         pygame.draw.ellipse(self.game_display, black, self.clear_border)
@@ -53,14 +55,24 @@ class Brush_and_Colours():
         self.game_display.blit(self.text, (1115, 8))
 
     def Brush(self):
-        for i in range (len(self.brush)-1):
-            pygame.draw.ellipse(self.game_display,black,self.brush[i])
+        for i in range (len(self.brush_strokes)-1):
+            pygame.draw.ellipse(self.game_display,self.brush_strokes_colour[i],self.brush_strokes[i])
+
+    def Colour_Selection(self):
+        for i in self.x_coordinates:
+            self.detection_rect=pygame.Rect(self.x_coordinates[i]-2, 3, 54, 54)
+            if self.detection_rect.collidepoint(self.mouse_position)==True and pygame.mouse.get_pressed()[0]==True:
+                self.selected_colour=self.colours[i]
+
+            else:
+                pass
     def event_handler(self):
         for event in pygame.event.get():
             if pygame.mouse.get_pressed()[0]==True:
 
                 if self.mouse_position[1]>100:
-                    self.brush.append(pygame.Rect(self.mouse_position[0], self.mouse_position[1], 20, 20))
+                    self.brush_strokes.append(pygame.Rect(self.mouse_position[0], self.mouse_position[1], 20, 20))
+                    self.brush_strokes_colour.append(self.selected_colour)
                 else:
                     pass
             elif event.type==QUIT:
@@ -69,7 +81,8 @@ class Brush_and_Colours():
     def run (self):
         self.mouse_position=pygame.mouse.get_pos()
         self.Colour_Blots()
-        self.Clear_Canvas()
+        self.Clear_Canvas_Button()
+        self.Colour_Selection()
         self.Brush()
         self.event_handler()
 class Canvas():
@@ -109,7 +122,7 @@ class Canvas():
             drawing.run()
 
             pygame.display.update()
-            clock.tick(1000)
+            clock.tick(2000)
 
 
 if __name__ == "__main__":
