@@ -14,7 +14,7 @@ class Brush_and_Colours():
         self.mouse_position=pygame.mouse.get_pos()
         self.brush_strokes = []
         self.brush_strokes_colour=[]
-
+        self.clear_button = pygame.Rect(1100, 5, 50, 50)
         self.game_display = display
         self.colours = {
             "black": (0, 0, 0),
@@ -53,14 +53,19 @@ class Brush_and_Colours():
                 pygame.draw.ellipse(self.game_display, self.colours[i], self.blot)
     def Clear_Canvas_Button(self):
         self.clear_border = pygame.Rect(1098, 3, 54, 54)
-        self.clear_button = pygame.Rect(1100, 5, 50, 50)
+
         pygame.draw.ellipse(self.game_display, black, self.clear_border)
         pygame.draw.ellipse(self.game_display, white, self.clear_button)
 
         self.font = pygame.font.SysFont('Comic Sans MS', 30)
         self.text=self.font.render("C",True,black)
         self.game_display.blit(self.text, (1115, 8))
-
+    def Clear_Canvas(self):
+        if self.clear_button.collidepoint(self.mouse_position)==True and pygame.mouse.get_pressed()[0]==True:
+            self.brush_strokes=[]
+            self.brush_strokes_colour=[]
+        else:
+            pass
     def Brush(self):
 
         for i in range (len(self.brush_strokes)-1):
@@ -91,6 +96,7 @@ class Brush_and_Colours():
         self.mouse_position=pygame.mouse.get_pos()
         self.Colour_Blots()
         self.Clear_Canvas_Button()
+        self.Clear_Canvas()
         self.Colour_Selection()
         self.Brush()
         self.event_handler()
