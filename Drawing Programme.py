@@ -10,8 +10,9 @@ orange = (230, 115, 0)
 class Brush_and_Colours():
     def __init__(self, display):
         pygame.init()
-        self.mouse_position_x = 0
-        self.mouse_position_y = 0
+        pygame.font.init()
+        self.mouse_position=pygame.mouse.get_pos()
+        self.brush = []
         self.game_display = display
         self.colours = {
             "black": (0, 0, 0),
@@ -41,8 +42,36 @@ class Brush_and_Colours():
             self.blot=pygame.Rect(self.x_coordinates[i],5,50,50)
             pygame.draw.ellipse(self.game_display, black, self.blot_border)
             pygame.draw.ellipse(self.game_display, self.colours[i], self.blot)
+    def Clear_Canvas(self):
+        self.clear_border = pygame.Rect(1098, 3, 54, 54)
+        self.clear_button = pygame.Rect(1100, 5, 50, 50)
+        pygame.draw.ellipse(self.game_display, black, self.clear_border)
+        pygame.draw.ellipse(self.game_display, white, self.clear_button)
 
+        self.font = pygame.font.SysFont('Comic Sans MS', 30)
+        self.text=self.font.render("C",True,black)
+        self.game_display.blit(self.text, (1115, 8))
 
+    def Brush(self):
+        for i in range (len(self.brush)-1):
+            pygame.draw.ellipse(self.game_display,black,self.brush[i])
+    def event_handler(self):
+        for event in pygame.event.get():
+            if pygame.mouse.get_pressed()[0]==True:
+
+                if self.mouse_position[1]>100:
+                    self.brush.append(pygame.Rect(self.mouse_position[0], self.mouse_position[1], 20, 20))
+                else:
+                    pass
+            elif event.type==QUIT:
+                pygame.quit()
+                quit()
+    def run (self):
+        self.mouse_position=pygame.mouse.get_pos()
+        self.Colour_Blots()
+        self.Clear_Canvas()
+        self.Brush()
+        self.event_handler()
 class Canvas():
     def __init__(self, screen_size):
         self.screen_size = screen_size
@@ -68,11 +97,6 @@ class Canvas():
         pygame.draw.rect(self.game_display, black, self.colours_box_border)
         pygame.draw.rect(self.game_display, orange, self.colours_box)
 
-    def event_handler(self):
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                quit()
 
     def run(self):
         clock = pygame.time.Clock()
@@ -82,10 +106,10 @@ class Canvas():
             self.drawing_prompt_box()
             self.timer_prompt_box()
             self.colour_pallete()
-            drawing.Colour_Blots()
-            self.event_handler()
+            drawing.run()
+
             pygame.display.update()
-            clock.tick(15)
+            clock.tick(1000)
 
 
 if __name__ == "__main__":
