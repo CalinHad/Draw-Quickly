@@ -14,7 +14,7 @@ class Brush_and_Colours():
         self.mouse_position=pygame.mouse.get_pos()
         self.brush_strokes = []
         self.brush_strokes_colour=[]
-        self.selected_colour=black
+
         self.game_display = display
         self.colours = {
             "black": (0, 0, 0),
@@ -38,12 +38,19 @@ class Brush_and_Colours():
             "brown": (950),
             "orange":(1025),
         }
+        self.selected_colour = self.colours["black"]
     def Colour_Blots(self):
         for i in self.colours:
-            self.blot_border = pygame.Rect(self.x_coordinates[i]-2, 3, 54, 54)
-            self.blot=pygame.Rect(self.x_coordinates[i],5,50,50)
-            pygame.draw.ellipse(self.game_display, black, self.blot_border)
-            pygame.draw.ellipse(self.game_display, self.colours[i], self.blot)
+            if self.selected_colour==self.colours[i]:
+                self.blot_border = pygame.Rect(self.x_coordinates[i] - 2, 3, 54, 54)
+                self.blot = pygame.Rect(self.x_coordinates[i], 5, 50, 50)
+                pygame.draw.ellipse(self.game_display, white, self.blot_border)
+                pygame.draw.ellipse(self.game_display, self.colours[i], self.blot)
+            else:
+                self.blot_border = pygame.Rect(self.x_coordinates[i]-2, 3, 54, 54)
+                self.blot=pygame.Rect(self.x_coordinates[i],5,50,50)
+                pygame.draw.ellipse(self.game_display, black, self.blot_border)
+                pygame.draw.ellipse(self.game_display, self.colours[i], self.blot)
     def Clear_Canvas_Button(self):
         self.clear_border = pygame.Rect(1098, 3, 54, 54)
         self.clear_button = pygame.Rect(1100, 5, 50, 50)
@@ -55,6 +62,7 @@ class Brush_and_Colours():
         self.game_display.blit(self.text, (1115, 8))
 
     def Brush(self):
+
         for i in range (len(self.brush_strokes)-1):
             pygame.draw.ellipse(self.game_display,self.brush_strokes_colour[i],self.brush_strokes[i])
 
@@ -79,6 +87,7 @@ class Brush_and_Colours():
                 pygame.quit()
                 quit()
     def run (self):
+
         self.mouse_position=pygame.mouse.get_pos()
         self.Colour_Blots()
         self.Clear_Canvas_Button()
@@ -122,7 +131,7 @@ class Canvas():
             drawing.run()
 
             pygame.display.update()
-            clock.tick(2000)
+            clock.tick(5000)
 
 
 if __name__ == "__main__":
