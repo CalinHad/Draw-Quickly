@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 import time
+import random
 black = (0, 0, 0)
 white = (255, 255, 255)
 grey = (115, 115, 115)
@@ -121,6 +122,17 @@ class Timer():
         self.remaining_time = self.endtime - int(time.time())
         self.event_handler()
         self.timer_display()
+class Drawing_Prompt():
+    def __init__(self,display):
+        self.game_display = display
+        self.drawing_prompts=["Aeroplane","Cat","Dog"]
+        self.selected_prompt=self.drawing_prompts[random.randint(0,2)]
+    def prompt_display(self):
+        self.font = pygame.font.SysFont('Comic Sans MS', 25)
+        self.text = self.font.render(str(self.selected_prompt), True, white)
+        self.game_display.blit(self.text, (2, 35))
+    def run(self):
+        self.prompt_display()
 
 
 class Canvas():
@@ -161,6 +173,7 @@ class Canvas():
         clock = pygame.time.Clock()
         drawing = Brush_and_Colours(self.game_display)
         time=Timer(self.game_display)
+        prompt=Drawing_Prompt(self.game_display)
         while True:
 
             self.game_display.fill(white)
@@ -169,6 +182,7 @@ class Canvas():
 
             self.colour_pallete()
             drawing.run()
+            prompt.run()
             time.run()
             pygame.display.update()
             clock.tick(5000)
