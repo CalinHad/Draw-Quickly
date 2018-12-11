@@ -133,14 +133,9 @@ class Drawing_Prompt():
         self.game_display.blit(self.text, (2, 35))
     def run(self):
         self.prompt_display()
-
-
 class Canvas():
-    def __init__(self, screen_size):
-        self.screen_size = screen_size
-        self.screen = pygame.Rect(0, 0, *self.screen_size)
-        pygame.init()
-        self.game_display = pygame.display.set_mode(screen_size)
+    def __init__(self, display):
+        self.game_display = display
 
     def drawing_prompt_box(self):
         self.drawing_prompt_border = pygame.Rect(0, 0, 200, 100)
@@ -175,20 +170,32 @@ class Canvas():
         time=Timer(self.game_display)
         prompt=Drawing_Prompt(self.game_display)
         while True:
-
             self.game_display.fill(white)
             self.drawing_prompt_box()
             self.timer_prompt_box()
-
             self.colour_pallete()
             drawing.run()
             prompt.run()
             time.run()
             pygame.display.update()
             clock.tick(5000)
+class Game():
+    def __init__(self,screen_size):
+        self.screen_size = screen_size
+        self.screen = pygame.Rect(0, 0, *self.screen_size)
+        pygame.init()
+        self.game_display = pygame.display.set_mode(screen_size)
+
+
+    def run (self):
+        display =Canvas(self.game_display)
+
+        while True:
+            display.run()
+
 
 
 if __name__ == "__main__":
     size = (1200, 800)
-    new_game = Canvas(size)
+    new_game = Game(size)
     new_game.run()
