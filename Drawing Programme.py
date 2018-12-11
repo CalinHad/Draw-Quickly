@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-
+import time
 black = (0, 0, 0)
 white = (255, 255, 255)
 grey = (115, 115, 115)
@@ -100,6 +100,29 @@ class Brush_and_Colours():
         self.Colour_Selection()
         self.Brush()
         self.event_handler()
+
+class Timer():
+
+    def __init__(self,display):
+
+        self.game_display=display
+        self.time_limit=60
+        self.endtime = int(time.time()) + self.time_limit
+        self.remaining_time=self.endtime-int(time.time())
+    def timer_display(self):
+        self.font = pygame.font.SysFont('Comic Sans MS', 25)
+        self.text = self.font.render(str(self.remaining_time), True, white)
+        self.game_display.blit(self.text, (202, 35))
+    def event_handler(self):
+        if self.remaining_time==0:
+            pygame.quit()
+            quit()
+    def run(self):
+        self.remaining_time = self.endtime - int(time.time())
+        self.event_handler()
+        self.timer_display()
+
+
 class Canvas():
     def __init__(self, screen_size):
         self.screen_size = screen_size
@@ -113,11 +136,19 @@ class Canvas():
         pygame.draw.rect(self.game_display, black, self.drawing_prompt_border)
         pygame.draw.rect(self.game_display, grey, self.drawing_prompt)
 
+        self.font = pygame.font.SysFont('Comic Sans MS', 25)
+        self.text = self.font.render("Drawing Prompt:", True, white)
+        self.game_display.blit(self.text, (2, 0))
+
     def timer_prompt_box(self):
         self.timer_box_border = pygame.Rect(200, 0, 200, 100)
         self.timer_box = pygame.Rect(200, 1, 198, 98)
         pygame.draw.rect(self.game_display, black, self.timer_box_border)
         pygame.draw.rect(self.game_display, grey, self.timer_box)
+
+        self.font = pygame.font.SysFont('Comic Sans MS', 25)
+        self.text = self.font.render("Timer:", True, white)
+        self.game_display.blit(self.text,(202,0))
 
     def colour_pallete(self):
         self.colours_box_border = pygame.Rect(400, 0, 800, 100)
@@ -129,13 +160,16 @@ class Canvas():
     def run(self):
         clock = pygame.time.Clock()
         drawing = Brush_and_Colours(self.game_display)
+        time=Timer(self.game_display)
         while True:
+
             self.game_display.fill(white)
             self.drawing_prompt_box()
             self.timer_prompt_box()
+
             self.colour_pallete()
             drawing.run()
-
+            time.run()
             pygame.display.update()
             clock.tick(5000)
 
