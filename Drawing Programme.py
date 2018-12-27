@@ -6,7 +6,9 @@ black = (0, 0, 0)
 white = (255, 255, 255)
 grey = (115, 115, 115)
 orange = (230, 115, 0)
+drawing_prompts=["Aeroplane","Cat","Dog","Car","Lorry","Van","Bird"]
 Round_Active = True
+Rounds_Played=1
 
 class Brush_and_Colours():
     def __init__(self, display):
@@ -107,7 +109,7 @@ class Timer():
     def __init__(self,display):
 
         self.game_display=display
-        self.time_limit=60
+        self.time_limit=2
         self.endtime = int(time.time()) + self.time_limit
         self.remaining_time=self.endtime-int(time.time())
     def timer_display(self):
@@ -129,9 +131,10 @@ class Timer():
 
 class Drawing_Prompt():
     def __init__(self,display):
+        global drawing_prompts
         self.game_display = display
-        self.drawing_prompts=["Aeroplane","Cat","Dog"]
-        self.selected_prompt=self.drawing_prompts[random.randint(0,2)]
+        self.selected_prompt=drawing_prompts[random.randint(0,(len(drawing_prompts)-1))]
+        drawing_prompts.remove(self.selected_prompt)
     def prompt_display(self):
         self.font = pygame.font.SysFont('Comic Sans MS', 25)
         self.text = self.font.render(str(self.selected_prompt), True, white)
@@ -143,26 +146,81 @@ class Drawing_Prompt():
 class Round_Transition():
     def __init__(self, display):
         self.game_display = display
-    def Text(self):
+    def transition_message(self):
         self.font = pygame.font.SysFont('Comic Sans MS', 50)
         self.text = self.font.render("Prepare for the next Round", True, orange)
         self.game_display.blit(self.text, (100, 100))
     def run(self):
         global Round_Active
+        global Rounds_Played
         self.game_display.fill(black)
-        self.Text()
+        self.transition_message()
+        Round_Active = True
+        Rounds_Played = Rounds_Played + 1
+
         pygame.display.update()
-        time.sleep(5)
-        Round_Active=True
+        time.sleep(1)
 
 
+
+class End_Game_Screen():
+    def __init__(self, display):
+        self.game_display = display
+
+    def score(self):
+        self.score_box_border = pygame.Rect(0, 0, 200, 100)
+        self.score_box = pygame.Rect(1, 1, 198, 98)
+        pygame.draw.rect(self.game_display, black,  self.score_box_border)
+        pygame.draw.rect(self.game_display, grey, self.score_box)
+
+        self.font = pygame.font.SysFont('Comic Sans MS', 25)
+        self.text = self.font.render("Score", True, white)
+        self.game_display.blit(self.text, (2, 0))
+    def average_accuracy(self):
+        self.average_accuracy_border = pygame.Rect(200, 0, 300, 100)
+        self.average_accuracy_box = pygame.Rect(201, 1, 298, 98)
+        pygame.draw.rect(self.game_display, black, self.average_accuracy_border)
+        pygame.draw.rect(self.game_display, grey, self.average_accuracy_box )
+
+        self.font = pygame.font.SysFont('Comic Sans MS', 25)
+        self.text = self.font.render("Average Accuracy", True, white)
+        self.game_display.blit(self.text, (202, 0))
+    def Play_Again_Button(self):
+        self.Play_Again_border = pygame.Rect(500, 0, 800, 800)
+        self.Play_Again_box = pygame.Rect(501, 1, 798, 798)
+        pygame.draw.rect(self.game_display, black, self.Play_Again_border)
+        pygame.draw.rect(self.game_display, orange, self.Play_Again_box)
+
+        self.font = pygame.font.SysFont('Comic Sans MS', 50)
+        self.text = self.font.render("Play Again", True, white)
+        self.game_display.blit(self.text, (702, 375))
+    def event_handler(self):
+        global Rounds_Played
+        global drawing_prompts
+        self.mouse_position = pygame.mouse.get_pos()
+        for event in pygame.event.get():
+            if pygame.mouse.get_pressed()[0]==True and self.mouse_position[0]>600:
+                Rounds_Played=1
+                drawing_prompts=["Aeroplane","Cat","Dog","Car","Lorry","Van","Bird"]
+
+            elif event.type == QUIT:
+                pygame.quit()
+                quit()
+    def run(self):
+        clock = pygame.time.Clock()
+        while Rounds_Played>5:
+            self.game_display.fill(white)
+            self.score()
+            self.average_accuracy()
+            self.Play_Again_Button()
+            self.event_handler()
+            pygame.display.update()
+            clock.tick(5000)
 
 class Canvas():
-    def __init__(self,screen_size):
-        self.screen_size = screen_size
-        self.screen = pygame.Rect(0, 0, *self.screen_size)
-        pygame.init()
-        self.game_display = pygame.display.set_mode(screen_size)
+    def __init__(self,display):
+
+        self.game_display = display
 
     def drawing_prompt_box(self):
         self.drawing_prompt_border = pygame.Rect(0, 0, 200, 100)
@@ -190,14 +248,14 @@ class Canvas():
         pygame.draw.rect(self.game_display, black, self.colours_box_border)
         pygame.draw.rect(self.game_display, orange, self.colours_box)
 
-
     def run(self):
-        transition=Round_Transition(self.game_display)
         clock = pygame.time.Clock()
         drawing = Brush_and_Colours(self.game_display)
         time=Timer(self.game_display)
         prompt=Drawing_Prompt(self.game_display)
-        while True:
+        transition = Round_Transition(self.game_display)
+        while Rounds_Played<=5:
+
             if Round_Active==True:
                 self.game_display.fill(white)
                 self.drawing_prompt_box()
@@ -210,14 +268,28 @@ class Canvas():
                 clock.tick(5000)
             else:
                 transition.run()
-                drawing = Brush_and_Colours(self.game_display)
                 time = Timer(self.game_display)
+                drawing = Brush_and_Colours(self.game_display)
                 prompt = Drawing_Prompt(self.game_display)
 
+class Game():
+    def __init__(self,screen_size):
+        self.screen_size = screen_size
+        self.screen = pygame.Rect(0, 0, *self.screen_size)
+        pygame.init()
+        self.game_display = pygame.display.set_mode(screen_size)
 
 
+    def run (self):
+        display =Canvas(self.game_display)
+        end_game = End_Game_Screen(self.game_display)
+        while True:
+            if Rounds_Played<=5:
+                display.run()
+            else:
+                end_game.run()
 
 if __name__ == "__main__":
     size = (1200, 800)
-    new_game = Canvas(size)
+    new_game = Game(size)
     new_game.run()
