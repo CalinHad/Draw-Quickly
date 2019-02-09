@@ -1,4 +1,5 @@
 import pygame
+import pygame.camera
 from pygame.locals import *
 import time
 import random
@@ -84,17 +85,15 @@ class Brush_and_Colours():
             else:
                 pass
     def event_handler(self):
-        for event in pygame.event.get():
-            if pygame.mouse.get_pressed()[0]==True:
 
-                if self.mouse_position[1]>100:
-                    self.brush_strokes.append(pygame.Rect(self.mouse_position[0], self.mouse_position[1], 20, 20))
-                    self.brush_strokes_colour.append(self.selected_colour)
-                else:
-                    pass
-            elif event.type==QUIT:
-                pygame.quit()
-                quit()
+        if pygame.mouse.get_pressed()[0]==True:
+
+            if self.mouse_position[1]>100:
+                self.brush_strokes.append(pygame.Rect(self.mouse_position[0], self.mouse_position[1], 20, 20))
+                self.brush_strokes_colour.append(self.selected_colour)
+            else:
+                pass
+
     def run (self):
 
         self.mouse_position=pygame.mouse.get_pos()
@@ -110,6 +109,7 @@ class Timer():
     def __init__(self,display):
 
         self.game_display=display
+
         self.end_round_button = pygame.Rect(300, 12, 75, 75)
         self.time_limit=10
         self.endtime = int(time.time()) + self.time_limit
@@ -120,8 +120,10 @@ class Timer():
         self.game_display.blit(self.text, (202, 35))
     def timer_complete(self):
         global Round_Active
-        if self.remaining_time<=0 :
+        if self.remaining_time==0 :
             Round_Active=False
+
+
     def end_round_early_button(self):
         self.end_round_button_border = pygame.Rect(298, 10, 79, 79)
 
@@ -137,9 +139,17 @@ class Timer():
     def event_handler(self):
         global Round_Times_Remaining
         self.mouse_position = pygame.mouse.get_pos()
-        if self.end_round_button.collidepoint(self.mouse_position)==True and pygame.mouse.get_pressed()[0]==True:
-            Round_Times_Remaining.append(self.remaining_time)
-            self.remaining_time=0
+        for event in pygame.event.get():
+            if event.type==MOUSEBUTTONDOWN:
+                print("h")
+                if self.end_round_button.collidepoint(self.mouse_position)==True:
+                    print("e")
+                    Round_Times_Remaining.append(self.remaining_time)
+                    self.remaining_time=0
+            elif event.type==QUIT:
+                pygame.quit()
+                quit()
+
     def run(self):
 
         self.remaining_time = self.endtime - int(time.time())
@@ -147,6 +157,7 @@ class Timer():
         self.timer_display()
         self.event_handler()
         self.timer_complete()
+
 
 
 
@@ -171,16 +182,22 @@ class Round_Transition():
         self.font = pygame.font.SysFont('Comic Sans MS', 50)
         self.text = self.font.render("Prepare for the next Round", True, orange)
         self.game_display.blit(self.text, (100, 100))
+    def drawing_capture(self):
+        self.capture_rect = pygame.Rect(0, 100, 1200,700)
+        self.sub_surface = self.game_display.subsurface(self.capture_rect)
+        pygame.image.save(self.sub_surface, ("Image"+str(Rounds_Played)+".jpg"))
     def run(self):
         global Round_Active
         global Rounds_Played
+        self.drawing_capture()
         self.game_display.fill(black)
         self.transition_message()
         Round_Active = True
         Rounds_Played = Rounds_Played + 1
 
         pygame.display.update()
-        time.sleep(1)
+        time.sleep(0.5)
+
 
 
 
