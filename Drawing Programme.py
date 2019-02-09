@@ -7,6 +7,7 @@ white = (255, 255, 255)
 grey = (115, 115, 115)
 orange = (230, 115, 0)
 drawing_prompts=["Aeroplane","Cat","Dog","Car","Lorry","Van","Bird"]
+Round_Times_Remaining=[]
 Round_Active = True
 Rounds_Played=1
 
@@ -109,7 +110,8 @@ class Timer():
     def __init__(self,display):
 
         self.game_display=display
-        self.time_limit=2
+        self.end_round_button = pygame.Rect(300, 12, 75, 75)
+        self.time_limit=10
         self.endtime = int(time.time()) + self.time_limit
         self.remaining_time=self.endtime-int(time.time())
     def timer_display(self):
@@ -120,13 +122,32 @@ class Timer():
         global Round_Active
         if self.remaining_time<=0 :
             Round_Active=False
+    def end_round_early_button(self):
+        self.end_round_button_border = pygame.Rect(298, 10, 79, 79)
 
+        pygame.draw.rect(self.game_display, black, self.end_round_button_border)
+        pygame.draw.rect(self.game_display, white, self.end_round_button)
 
+        self.font = pygame.font.SysFont('Comic Sans MS', 30)
+        self.text1 = self.font.render("End ", True, black)
+        self.text2 = self.font.render("Early", True, black)
+        self.game_display.blit(self.text1, (303, 8))
+        self.game_display.blit(self.text2, (303, 38))
+
+    def event_handler(self):
+        global Round_Times_Remaining
+        self.mouse_position = pygame.mouse.get_pos()
+        if self.end_round_button.collidepoint(self.mouse_position)==True and pygame.mouse.get_pressed()[0]==True:
+            Round_Times_Remaining.append(self.remaining_time)
+            self.remaining_time=0
     def run(self):
 
         self.remaining_time = self.endtime - int(time.time())
+        self.end_round_early_button()
         self.timer_display()
+        self.event_handler()
         self.timer_complete()
+
 
 
 class Drawing_Prompt():
@@ -275,7 +296,6 @@ class Canvas():
 class Game():
     def __init__(self,screen_size):
         self.screen_size = screen_size
-        self.screen = pygame.Rect(0, 0, *self.screen_size)
         pygame.init()
         self.game_display = pygame.display.set_mode(screen_size)
 
