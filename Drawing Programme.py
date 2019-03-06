@@ -1,13 +1,13 @@
 import pygame
-import pygame.camera
 from pygame.locals import *
+from keras.models import load_model
 import time
 import random
 black = (0, 0, 0)
 white = (255, 255, 255)
 grey = (115, 115, 115)
 orange = (230, 115, 0)
-drawing_prompts=["Aeroplane","Cat","Dog","Car","Lorry","Van","Bird"]
+drawing_prompts=["Apple","Pineapple","Dog","Grapes","Banana","Airplane","Bat"]
 Round_Times_Remaining=[]
 Round_Active = True
 Rounds_Played=1
@@ -84,10 +84,8 @@ class Brush_and_Colours():
 
             else:
                 pass
-    def event_handler(self):
-
+    def Drawing(self):
         if pygame.mouse.get_pressed()[0]==True:
-
             if self.mouse_position[1]>100:
                 self.brush_strokes.append(pygame.Rect(self.mouse_position[0], self.mouse_position[1], 20, 20))
                 self.brush_strokes_colour.append(self.selected_colour)
@@ -102,7 +100,7 @@ class Brush_and_Colours():
         self.Clear_Canvas()
         self.Colour_Selection()
         self.Brush()
-        self.event_handler()
+        self.Drawing()
 
 class Timer():
 
@@ -141,9 +139,9 @@ class Timer():
         self.mouse_position = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type==MOUSEBUTTONDOWN:
-                print("h")
+
                 if self.end_round_button.collidepoint(self.mouse_position)==True:
-                    print("e")
+
                     Round_Times_Remaining.append(self.remaining_time)
                     self.remaining_time=0
             elif event.type==QUIT:
@@ -185,7 +183,7 @@ class Round_Transition():
     def drawing_capture(self):
         self.capture_rect = pygame.Rect(0, 100, 1200,700)
         self.sub_surface = self.game_display.subsurface(self.capture_rect)
-        pygame.image.save(self.sub_surface, ("Image"+str(Rounds_Played)+".jpg"))
+        pygame.image.save(self.sub_surface, ("Image"+str(Rounds_Played)+".tiff"))
     def run(self):
         global Round_Active
         global Rounds_Played
@@ -232,6 +230,8 @@ class End_Game_Screen():
         self.font = pygame.font.SysFont('Comic Sans MS', 50)
         self.text = self.font.render("Play Again", True, white)
         self.game_display.blit(self.text, (702, 375))
+   # def load_model(self):
+        #self.model = load_model('images.h5')
     def event_handler(self):
         global Rounds_Played
         global drawing_prompts
